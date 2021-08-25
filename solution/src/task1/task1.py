@@ -2,7 +2,7 @@ import pandas as pd
 import os
 import json
 import logging
-
+from copy import deepcopy
 
 # init logger
 logger = logging.getLogger()
@@ -39,6 +39,7 @@ def get_df(table_name):
 
 
 def create_table_from_events(df):
+    historical_table = {}  # will contain id + ts key for historical values
     data_table = {}
     for k, v in df.iterrows():
         if v['op'] == 'c':
@@ -49,10 +50,12 @@ def create_table_from_events(df):
         elif v['op'] == 'u':
             entry_id = v['id']
             logger.debug(f"update operation for {entry_id} set {v['set']}")
+            historical_table[(entry_id, v['ts'])] = deepcopy(data_table[entry_id])
             for key, value in v['set'].items():
                 data_table[entry_id][key] = value
-
-    return pd.DataFrame.from_dict(data_table, orient='index')
+    historical_df = pd.DataFrame.from_dict(historical_table, orient='index').reset_index()
+    historical_df = historical_df.rename({'level_0': 'id', 'level_1': 'ts'}, axis=1)
+    return pd.DataFrame.from_dict(data_table, orient='index'), historical_df
 
 
 def get_accounts():
@@ -74,12 +77,19 @@ def get_savings_accounts():
 
 
 if __name__ == '__main__':
-
     logger.debug('Task1 initialized.')
-    logger.info(f"accounts table:\n{get_accounts()}")
 
-    logger.info(f"cards table:\n{get_cards()}")
+    # I am still not sure what __historical table__ mean, let me print both current state and historical
+    accounts, historical_accounts = get_accounts()
+    logger.info(f"historical accounts table:\n{historical_accounts}\n")
+    logger.info(f"accounts table:\n{accounts}\n")
 
-    logger.info(f"savings_accounts table:\n{get_savings_accounts()}")
+    cards, historical_cards = get_cards()
+    logger.info(f"historical cards table:\n{historical_cards}\n")
+    logger.info(f"cards table:\n{cards}\n")
+
+    savings_accounts, historical_savings_accounts = get_savings_accounts()
+    logger.info(f"historical savings_account table:\n{historical_savings_accounts}\n")
+    logger.info(f"savings_accounts table:\n{savings_accounts}\n")
 
     logger.debug('success')
