@@ -3,8 +3,9 @@ import os
 import json
 import logging
 
-logger = logging.getLogger()
 
+# init logger
+logger = logging.getLogger()
 ch = logging.StreamHandler()
 ch.setLevel(os.environ['LOG_LEVEL'])
 # create formatter
@@ -13,11 +14,17 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 logger.setLevel('DEBUG')
 
+# set pandas to not truncate output tables when print
+pd.set_option("max_columns", None)  # show all cols
+pd.set_option('max_colwidth', None)  # show full width of showing cols
+pd.set_option("expand_frame_repr", False)  # print
+
 
 def get_df(table_name):
     path = os.path.join(os.environ['DATA_PATH'], table_name)
     data_files = [pos_json for pos_json in os.listdir(path) if pos_json.endswith('.json')]
-
+    if len(data_files) == 0:
+        raise Exception('No input data found!')
     js_list = []
 
     for one in data_files:
@@ -67,11 +74,12 @@ def get_savings_accounts():
 
 
 if __name__ == '__main__':
+
     logger.debug('Task1 initialized.')
-    logger.info('accounts table:')
-    logger.info(get_accounts())
-    logger.info('cards table:')
-    logger.info(get_cards())
-    logger.info('savings_accounts table:')
-    logger.info(get_savings_accounts())
+    logger.info(f"accounts table:\n{get_accounts()}")
+
+    logger.info(f"cards table:\n{get_cards()}")
+
+    logger.info(f"savings_accounts table:\n{get_savings_accounts()}")
+
     logger.debug('success')
