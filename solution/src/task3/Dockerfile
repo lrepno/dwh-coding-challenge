@@ -10,4 +10,4 @@ ENV DATA_PATH ../../data
 ENV LOG_LEVEL INFO
 ENV PYTHONPATH "${PYTHONPATH}:."
 
-CMD [ "python3", "task2/task2.py"]
+CMD [ "python3", "task3/task3.py"]

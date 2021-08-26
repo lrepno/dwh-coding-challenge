@@ -2,6 +2,9 @@ from task2.task2 import get_denormalized_view
 from task1.task1 import logger
 import pandas as pd
 
+pd.options.mode.chained_assignment = None
+
+
 if __name__ == '__main__':
     df = get_denormalized_view()
     df = df[['ts', 'id', 'account_id', 'card_id', 'savings_account_id', 'credit_used', 'balance']]
