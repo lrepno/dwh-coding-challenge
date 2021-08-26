@@ -7,7 +7,8 @@ pd.set_option("max_columns", None)  # show all cols
 pd.set_option('max_colwidth', None)  # show full width of showing cols
 pd.set_option("expand_frame_repr", False)  # print
 
-if __name__ == '__main__':
+
+def get_denormalized_view():
     _, historical_accounts = get_accounts()
     _, historical_cards = get_cards()
     _, historical_savings_accounts = get_savings_accounts()
@@ -43,9 +44,12 @@ if __name__ == '__main__':
                   left_on=[df['ts'], df['savings_account_id']],
                   right_on=[historical_savings_accounts['ts'], historical_savings_accounts['savings_account_id']],
                   suffixes=('', '_savings')) \
-        .drop('key_0', axis=1)\
+        .drop('key_0', axis=1) \
         .drop('key_1', axis=1)
 
     df.fillna(method='ffill', inplace=True)
-    print(df)
+    return df
 
+
+if __name__ == '__main__':
+    print(get_denormalized_view())
