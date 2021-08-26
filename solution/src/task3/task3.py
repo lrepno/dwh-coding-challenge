@@ -1,6 +1,7 @@
 from task2.task2 import get_denormalized_view
 from task1.task1 import logger
 import pandas as pd
+from datetime import datetime
 
 pd.options.mode.chained_assignment = None
 
@@ -26,5 +27,6 @@ if __name__ == '__main__':
     credit_transactions = transactions[~pd.isna(transactions['credit_transaction'])].drop('sa_transaction', axis=1)
     sa_transactions = transactions[~pd.isna(transactions['sa_transaction'])].drop('credit_transaction', axis=1)
     transactions = credit_transactions.append(sa_transactions).sort_values(by='ts', ascending=True)
+    transactions['ts'] = transactions['ts'].apply(lambda x: datetime.fromtimestamp(x/1000) if ~pd.isna(x) else pd.NA)
     logger.info(f'{len(all_transactions)} transactions has been made.')
     logger.info(f'Here is the list of them:\n{transactions}')
