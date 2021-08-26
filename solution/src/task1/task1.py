@@ -41,20 +41,30 @@ def get_df(table_name):
 def create_table_from_events(df):
     historical_table = {}  # will contain id + ts key for historical values
     data_table = {}
+    entry_id = None
     for k, v in df.iterrows():
+        v['ts'] = int(v['ts'])
         if v['op'] == 'c':
+            if entry_id is not None:
+                historical_table[(entry_id, data_table[entry_id]['ts'])] = deepcopy(data_table[entry_id])
             entry_id = v['id']
             logger.debug(f"create operation for {entry_id} with data {v['data']}")
+            v['data']['ts'] = v['ts']
             data_table[entry_id] = v['data']
 
         elif v['op'] == 'u':
+            historical_table[(entry_id, data_table[entry_id]['ts'])] = deepcopy(data_table[entry_id])
             entry_id = v['id']
+            v['set']['ts'] = v['ts']
             logger.debug(f"update operation for {entry_id} set {v['set']}")
-            historical_table[(entry_id, v['ts'])] = deepcopy(data_table[entry_id])
+
             for key, value in v['set'].items():
                 data_table[entry_id][key] = value
+
+    historical_table[(entry_id, data_table[entry_id]['ts'])] = data_table[entry_id]
+
     historical_df = pd.DataFrame.from_dict(historical_table, orient='index').reset_index()
-    historical_df = historical_df.rename({'level_0': 'id', 'level_1': 'ts'}, axis=1)
+    historical_df = historical_df.drop('ts', axis=1).rename({'level_0': 'id', 'level_1': 'ts'}, axis=1)
     return pd.DataFrame.from_dict(data_table, orient='index'), historical_df
 
 
