@@ -37,7 +37,9 @@ This task is considering the output table from Task 2 and calculates what are th
 filters the rows with changes and split them to credit/balance dataframes, allowing to have 1 line per 1 transaction.
 
 In order to discuss how many transactions, when and what is the size of them, we would need to print all of them and analyze.
-No specific directions are given so I printed how much transactions occured and table with them. 
+I have also converted unix milliseconds to datetime to be human-readable for this table.
+
+No specific directions are given so I printed how much transactions occured and table itself. 
 
 
 ## How to run
