@@ -21,6 +21,8 @@ pd.set_option("expand_frame_repr", False)  # print
 
 
 def get_df(table_name):
+    # read each data file from folder and append to a list of dicts
+    # then create a pandas dataframe and return it
     path = os.path.join(os.environ['DATA_PATH'], table_name)
     data_files = [pos_json for pos_json in os.listdir(path) if pos_json.endswith('.json')]
     if len(data_files) == 0:
@@ -39,6 +41,7 @@ def get_df(table_name):
 
 
 def create_table_from_events(df):
+    # for each event append old state to historical table and make changes to data table
     historical_table = {}  # will contain id + ts key for historical values
     data_table = {}
     entry_id = None

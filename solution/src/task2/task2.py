@@ -1,6 +1,5 @@
 from task1.task1 import get_cards, get_accounts, get_savings_accounts
 import pandas as pd
-from datetime import datetime
 
 # set pandas to not truncate output tables when print
 pd.set_option("max_columns", None)  # show all cols
